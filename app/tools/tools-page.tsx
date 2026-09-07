@@ -4,12 +4,11 @@ import { AppLayout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import Link from "next/link";
 
-import { FileText, User, Calculator, Scale, ReceiptText, Mail, Video } from "lucide-react";
+import { FileText, User, Calculator, Scale, ReceiptText, Mail } from "lucide-react";
 
 export function ToolsPage() {
   const { t } = useI18n();
   const items = [
-    { to: "/mock-interview", icon: Video, title: t("mockInterview.toolTitle"), desc: t("mockInterview.toolDesc"), pro: false },
     { to: "/tools/cover-letter", icon: Mail, title: t("coverLetter.title"), desc: t("tools.coverLetterDesc"), pro: false },
     { to: "/tools/resume", icon: FileText, title: t("resume.title"), desc: t("tools.resumeDesc"), pro: true },
     { to: "/tools/linkedin", icon: User, title: t("linkedin.title"), desc: t("tools.linkedinDesc"), pro: true },
