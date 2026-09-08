@@ -80,7 +80,6 @@ const TABLES = [
   "companies",
   "company_votes",
   "engagement_emails",
-  "english_lessons",
   "help_articles",
   "job_perk_map",
   "job_perks",

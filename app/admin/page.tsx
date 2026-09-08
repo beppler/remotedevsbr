@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { RequireAdmin } from "@/components/Guards";
 import { JourneyAdmin } from "./journey-content";
 
-type Section = "jobs" | "companies" | "resources" | "classes" | "help_articles" | "english_lessons";
+type Section = "jobs" | "companies" | "resources" | "classes" | "help_articles";
 
 function CrudList({ section }: { section: Section }) {
   const [items, setItems] = useState<any[]>([]);
@@ -358,10 +358,6 @@ function CrudList({ section }: { section: Section }) {
     help_articles: [
       { name: "title_pt", label: "Title PT" }, { name: "title_en", label: "Title EN" },
       { name: "category", label: "Category" }, { name: "body_pt", label: "Body PT" }, { name: "body_en", label: "Body EN" },
-    ],
-    english_lessons: [
-      { name: "title_pt", label: "Title PT" }, { name: "title_en", label: "Title EN" },
-      { name: "level", label: "Level" }, { name: "body_pt", label: "Body PT" }, { name: "body_en", label: "Body EN" },
     ],
   };
 
@@ -3131,13 +3127,12 @@ function Inner() {
             <TabsTrigger value="resources">Resources</TabsTrigger>
             <TabsTrigger value="classes">Classes</TabsTrigger>
             <TabsTrigger value="help_articles">Help</TabsTrigger>
-            <TabsTrigger value="english_lessons">English</TabsTrigger>
             <TabsTrigger value="feature_toggles">Feature Toggles</TabsTrigger>
             <TabsTrigger value="mock_interviews">Mock Interviews</TabsTrigger>
             <TabsTrigger value="recruiters">Recruiters</TabsTrigger>
             <TabsTrigger value="journey">Journey</TabsTrigger>
           </TabsList>
-          {(["companies","resources","classes","help_articles","english_lessons"] as Section[]).map(s => (
+          {(["companies","resources","classes","help_articles"] as Section[]).map(s => (
             <TabsContent key={s} value={s} className="mt-6"><CrudList section={s} /></TabsContent>
           ))}
           <TabsContent value="jobs" className="mt-6">

@@ -302,43 +302,7 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      english_lessons: {
-        Row: {
-          audio_url: string | null
-          body_en: string | null
-          body_pt: string | null
-          created_at: string
-          id: string
-          is_pro: boolean
-          level: string | null
-          title_en: string
-          title_pt: string
-        }
-        Insert: {
-          audio_url?: string | null
-          body_en?: string | null
-          body_pt?: string | null
-          created_at?: string
-          id?: string
-          is_pro?: boolean
-          level?: string | null
-          title_en: string
-          title_pt: string
-        }
-        Update: {
-          audio_url?: string | null
-          body_en?: string | null
-          body_pt?: string | null
-          created_at?: string
-          id?: string
-          is_pro?: boolean
-          level?: string | null
-          title_en?: string
-          title_pt?: string
-        }
-        Relationships: []
-      }
+      },
       feature_toggles: {
         Row: {
           created_at: string

@@ -4,7 +4,7 @@ import { AppLayout } from "@/components/Layout";
 import { useI18n } from "@/lib/i18n";
 import Link from "next/link";
 
-import { FileText, User, Calculator, Scale, ReceiptText, Mail } from "lucide-react";
+import { FileText, User, Calculator, ReceiptText, Mail } from "lucide-react";
 
 export function ToolsPage() {
   const { t } = useI18n();
@@ -14,7 +14,6 @@ export function ToolsPage() {
     { to: "/tools/linkedin", icon: User, title: t("linkedin.title"), desc: t("tools.linkedinDesc"), pro: true },
     { to: "/tools/salary", icon: Calculator, title: t("salary.title"), desc: t("tools.salaryDesc"), pro: false },
     { to: "/tools/invoice-generator", icon: ReceiptText, title: t("invoice.toolTitle"), desc: t("invoice.toolSubtitle"), pro: false },
-    { to: "/english", icon: Scale, title: t("english.title"), desc: t("english.subtitle"), pro: true },
   ];
   return (
     <AppLayout>
