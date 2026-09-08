@@ -6,14 +6,16 @@ import { useI18n } from "@/lib/i18n";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-type MoneyField = "usdHourly" | "usdWeekly" | "usdMonthly" | "usdYearly" | "brlHourly" | "brlWeekly" | "brlMonthly" | "brlYearly";
+type MoneyField = "usdHourly" | "usdDaily" | "usdWeekly" | "usdMonthly" | "usdYearly" | "brlHourly" | "brlDaily" | "brlWeekly" | "brlMonthly" | "brlYearly";
 
 interface SalaryValues {
   usdHourly: number;
+  usdDaily: number;
   usdWeekly: number;
   usdMonthly: number;
   usdYearly: number;
   brlHourly: number;
+  brlDaily: number;
   brlWeekly: number;
   brlMonthly: number;
   brlYearly: number;
@@ -30,14 +32,17 @@ const round2 = (n: number): number => Math.round(n * 100) / 100;
 const deriveFromYearly = (yearly: number, hours: number, rate: number): MoneyValues => {
   const usdYearly = yearly;
   const usdWeekly = yearly / 52;
+  const usdDaily = usdWeekly / 5;
   const usdMonthly = yearly / 12;
   const usdHourly = safe(hours, usdWeekly);
   return {
     usdHourly: round2(usdHourly),
+    usdDaily: round2(usdDaily),
     usdWeekly: round2(usdWeekly),
     usdMonthly: round2(usdMonthly),
     usdYearly: round2(usdYearly),
     brlHourly: round2(usdHourly * rate),
+    brlDaily: round2(usdDaily * rate),
     brlWeekly: round2(usdWeekly * rate),
     brlMonthly: round2(usdMonthly * rate),
     brlYearly: round2(usdYearly * rate),
@@ -50,6 +55,8 @@ const rootYearly = (anchor: MoneyField, value: number, hours: number, rate: numb
       return value;
     case "usdWeekly":
       return value * 52;
+    case "usdDaily":
+      return value * 52 * 5;
     case "usdMonthly":
       return value * 12;
     case "usdHourly":
@@ -58,6 +65,8 @@ const rootYearly = (anchor: MoneyField, value: number, hours: number, rate: numb
       return safe(rate, value);
     case "brlWeekly":
       return safe(rate, value) * 52;
+    case "brlDaily":
+      return safe(rate, value) * 52 * 5;
     case "brlMonthly":
       return safe(rate, value) * 12;
     case "brlHourly":
@@ -72,10 +81,12 @@ const moneyFromAnchor = (anchor: MoneyField, value: number, hours: number, rate:
 
 const initialValues: SalaryValues = {
   usdHourly: 120000 / (52 * 40),
+  usdDaily: (120000 / 52) / 5,
   usdWeekly: 120000 / 52,
   usdMonthly: 120000 / 12,
   usdYearly: 120000,
   brlHourly: (120000 / (52 * 40)) * 5,
+  brlDaily: ((120000 / 52) / 5) * 5,
   brlWeekly: (120000 / 52) * 5,
   brlMonthly: (120000 / 12) * 5,
   brlYearly: 120000 * 5,
@@ -117,8 +128,28 @@ export function SalaryPage() {
   const [anchor, setAnchor] = useState<MoneyField | null>(null);
   const [drafts, setDrafts] = useState<Partial<Record<MoneyField, string>>>({});
 
+  const clearDraft = useCallback((field: MoneyField) => {
+    setDrafts((d) => {
+      const next = { ...d };
+      delete next[field];
+      return next;
+    });
+  }, []);
+
+  const clearMoneyDrafts = useCallback(() => {
+    setDrafts((d) => {
+      const next = { ...d };
+      for (const k of ["usdHourly", "usdDaily", "usdWeekly", "usdMonthly", "usdYearly", "brlHourly", "brlDaily", "brlWeekly", "brlMonthly", "brlYearly"] as const) delete next[k];
+      return next;
+    });
+  }, []);
+
   const setMoney = useCallback((field: MoneyField, raw: string) => {
-    setDrafts((d) => ({ ...d, [field]: raw }));
+    setDrafts((d) => {
+      const next: Partial<Record<MoneyField, string>> = {};
+      next[field] = raw;
+      return next;
+    });
     const v = Number(raw);
     if (Number.isNaN(v)) return;
     setAnchor(field);
@@ -128,32 +159,27 @@ export function SalaryPage() {
   const setHours = useCallback((raw: string) => {
     const h = Number(raw);
     if (Number.isNaN(h)) return;
+    clearMoneyDrafts();
     setValues((cur) => {
       const usdHourly = round2(safe(h, cur.usdWeekly));
       return { ...cur, hours: h, usdHourly, brlHourly: round2(usdHourly * cur.rate) };
     });
-  }, []);
+  }, [clearMoneyDrafts]);
 
   const setRate = useCallback((raw: string) => {
     const r = Number(raw);
     if (Number.isNaN(r)) return;
+    clearMoneyDrafts();
     setValues((cur) => ({
       ...cur,
       rate: r,
       brlHourly: round2(cur.usdHourly * r),
+      brlDaily: round2(cur.usdDaily * r),
       brlWeekly: round2(cur.usdWeekly * r),
       brlMonthly: round2(cur.usdMonthly * r),
       brlYearly: round2(cur.usdYearly * r),
     }));
-  }, []);
-
-  const clearDraft = useCallback((field: MoneyField) => {
-    setDrafts((d) => {
-      const next = { ...d };
-      delete next[field];
-      return next;
-    });
-  }, []);
+  }, [clearMoneyDrafts]);
 
   return (
     <AppLayout>
@@ -179,6 +205,14 @@ export function SalaryPage() {
             isAnchor={anchor === "usdHourly"}
             onChange={(raw) => setMoney("usdHourly", raw)}
             onBlur={() => clearDraft("usdHourly")}
+          />
+          <Field
+            label={t("salary.daily")}
+            prefix="$"
+            value={drafts.usdDaily ?? values.usdDaily.toFixed(2)}
+            isAnchor={anchor === "usdDaily"}
+            onChange={(raw) => setMoney("usdDaily", raw)}
+            onBlur={() => clearDraft("usdDaily")}
           />
           <Field
             label={t("salary.weekly")}
@@ -214,6 +248,14 @@ export function SalaryPage() {
             isAnchor={anchor === "brlHourly"}
             onChange={(raw) => setMoney("brlHourly", raw)}
             onBlur={() => clearDraft("brlHourly")}
+          />
+          <Field
+            label={t("salary.daily")}
+            prefix="R$"
+            value={drafts.brlDaily ?? values.brlDaily.toFixed(2)}
+            isAnchor={anchor === "brlDaily"}
+            onChange={(raw) => setMoney("brlDaily", raw)}
+            onBlur={() => clearDraft("brlDaily")}
           />
           <Field
             label={t("salary.weekly")}
